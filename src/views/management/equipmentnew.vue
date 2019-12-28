@@ -7,15 +7,16 @@
         <i>></i>
       </div>
       <x-input :title="$t('barIndex.room')" v-model="metername" :placeholder="$t('equip.room')"></x-input>
-      <x-input :title="$t('device.electricnumber')" v-model="commaddress" :placeholder="$t('equip.meter')"></x-input>
+      <x-input :title="$t('device.electricnumber')" v-model="commaddress" :placeholder="$t('equip.meter')" :is-type="commaddressValid" @on-change="commaddressChange" ref="commaddress"></x-input>
       <x-input title="状态" v-model="existing" disabled></x-input>
       <!-- 告警阀值 -->
       <x-input :title="$t('equip.alarm')" v-model="alarmenergy" disabled></x-input>
     </group>
     <group :title="$t('equip.eleprice')" class="edit new">
-      <radio :options="radio001" v-model="radioData"></radio>
+      <radio :options="radioList" v-model="radioData"></radio>
     </group>
-    <x-button @click.native="eleedit" class="eleedit-btn">{{$t("device.determine")}}</x-button>
+    <x-button @click.native="eleedit" class="eleedit-btn" :disabled="disabled">{{$t("device.determine")}}</x-button>
+
     <div v-transfer-dom>
       <confirm v-model="meternameshow" :title="$t('device.tips')" :confirm-text="$t('device.determine')" :cancel-text="$t('device.cancel')" @on-confirm="onConfirm">
         <p class="text-center">{{$t("equip.fillroom")}}</p>
@@ -58,7 +59,7 @@ export default {
       alarmenergyshow: false, //告警阀值提示
       priceshow: false, //电价图示
       exist: false, //存在提示
-      radio001: [],
+      radioList: [],
       radioData: "",
       commaddress: "", //电表编号
       metername: "", //房间号
@@ -70,6 +71,13 @@ export default {
       existing: '新增',
       toastText: '',
       showToast: false,
+      commaddressValid: function(val) {
+        return {
+          valid: /^\d{8}$/.test(val),
+          msg: '请输入8位数字的通讯地址'
+        }
+      },
+      disabled: false
     };
   },
   directives: {
@@ -87,12 +95,6 @@ export default {
     Toast
   },
 
-  watch: {
-    isExisting(val) {
-      this.existing = val === 1 ? '新增' : '已存在'
-    }
-  },
-
   mounted() {
     // if (Object.keys(this.$route.params).length != 0) {
     //   this.commaddress = this.$route.params.id;
@@ -108,9 +110,11 @@ export default {
       this.metername = meter.disc
       this.commaddress = meter.commAddress
       this.isExisting = 1
+      this.existing = '已存在'
       this.radioData = meter.priceId
     } else {
       this.isExisting = null
+      this.existing = '新增'
     }
   },
 
@@ -119,9 +123,9 @@ export default {
     getPricelist() {
       api.GetPriceList({ accountid }).then(res => {
         console.log(res, '电价')
-        this.priceList = res.data.listitem;
+        this.priceList = res.data.listitem
         this.priceList.forEach((val, key) => {
-          this.radio001.push({
+          this.radioList.push({
             value: val.pricevalue,
             key: val.priceid
           });
@@ -162,9 +166,17 @@ export default {
       //       }
       //     });
       // }
-      let id = this.$route.params.roomid
+      if (!this.metername.trim()) {
+        this.toastText = '请输入房间号'
+        this.showToast = true
+        return
+      } else if (!this.commaddress.trim()) {
+        this.toastText = '请输入表号'
+        this.showToast = true
+        return
+      }
       let obj = {
-	      id,
+	      id: this.$store.state.roomid,
 	      accountid,
 	      metername: this.metername,
 	      commaddress: this.commaddress,
@@ -183,16 +195,17 @@ export default {
       })
     },
     toPickMeter() {
-      let roomid = this.$route.params.roomid
-      console.log(roomid, 'roomid')
-      this.$router.push({
-        name: 'pickMeter',
-        params: {roomid}
-        // 当前房间的id
-      })
+      this.$router.push('/pickMeter')
     },
     // 确定事件（只是个形式）
-    onConfirm() {}
+    onConfirm() {},
+    commaddressChange() {
+      if(this.$refs.commaddress.valid){
+        this.disabled = false
+      }else{
+        this.disabled = true
+      }
+    }
   }
 };
 </script>

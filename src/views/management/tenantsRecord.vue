@@ -26,7 +26,12 @@
       </ul>
       <i class="delete" @click="remove(item)"></i>
     </div>
-    <div class="add" @click="add">新增</div>
+    <p class="datano" v-show="datano">
+      <img src="../../assets/noData.png" alt="">
+      <br>
+      暂无数据
+    </p>
+    <div class="add" @click="$router.push('/searchTenant')">新增</div>
 
     <div v-transfer-dom>
       <confirm v-model="removeShow" title="提示" confirm-text="确定" cancel-text="取消" @on-confirm="onConfirmRemove">
@@ -49,7 +54,8 @@ export default {
       removeShow: false,
       item: {},
       showToast: false,
-      toastText: ''
+      toastText: '',
+      datano: true
     };
   },
 
@@ -75,35 +81,32 @@ export default {
 
   methods: {
     getTenantList() {
-      let roomid = this.$route.params.id
       let obj = {
         accountid,
         pageNum: 1,
         pageSize: 10,
-        roomid
+        roomid: this.$store.state.roomid
       }
       api.getRoomConfiguration(obj).then(res => {
         console.log(res, '租客列表')
-        this.tenants = res.data.items
+        if (res.data.total > 0) {
+          this.datano = false
+          this.tenants = res.data.items
+        } else {
+          this.datano = true
+        }
       })
-    },
-    add() {
-      let roomid = this.$route.params.id
-      let params = {roomid}
-      console.log(params)
-      this.$router.push({name: 'searchTenant', params})
     },
     remove(item) {
       this.removeShow = true
       this.item = item
     },
     onConfirmRemove() {
-      let roomid = this.$route.params.id
       let obj = {
         accountid,
         id: this.item.id,
         optType: 3,
-        roomid,
+        roomid: this.$store.state.roomid,
         rent: this.item.rent,
         automaticbill: this.item.automaticbill,
         datepayment: this.item.datepayment,
@@ -191,6 +194,18 @@ export default {
     font-size: 36 / @width75;
     background: rgb(53, 186, 182);
     color: white;
+  }
+  .datano {
+    text-align: center;
+    font-size: 32 / @width75;
+    margin: 32 / @width75;
+    padding-bottom: 32 / @width75;
+    color: rgb(153,153,153);
+    img {
+      width: 262 / @width75;
+      height: 210 / @width75;
+      margin: 320 / @width75 0 70 / @width75;
+    }
   }
 }
 </style>

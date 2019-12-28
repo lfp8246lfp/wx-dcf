@@ -94,9 +94,8 @@ export default {
       })
     },
     pick(item) {
-      let roomid = this.$route.params.roomid
       let params = {
-        roomid,
+        roomid: this.$store.state.roomid,
         ...item
       }
       this.$router.push({

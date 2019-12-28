@@ -29,7 +29,11 @@ const state = {
     city: '',
     province: '',
     headimgurl: ''
-  }
+  },
+  balance: 0,
+    // 余额
+  roomid: 0
+    // 选择房间的roomid
 }
 
 export default new Vuex.Store({

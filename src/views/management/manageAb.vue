@@ -478,11 +478,17 @@ export default {
     }
   }
 }
-.datano{
-      text-align    : center;
-      font-size     : 32/@width75;
-      margin        : 32/@width75;
-      padding-bottom: 32/@width75;
+  .datano {
+    text-align: center;
+    font-size: 32 / @width75;
+    margin: 32 / @width75;
+    padding-bottom: 32 / @width75;
+    color: rgb(153,153,153);
+    img {
+      width: 262 / @width75;
+      height: 210 / @width75;
+      margin: 50 / @width75 0 70 / @width75;
+    }
   }
 .address{
   padding: 20/@width75 38/@width75;

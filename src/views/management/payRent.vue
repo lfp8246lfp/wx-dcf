@@ -66,12 +66,12 @@
       <confirm v-model="showConfirm1"
       title="确定要缴费吗？"
       @on-confirm="onConfirm">
-        <p style="text-align:center;">余额：{{money}}</p>
+        <p style="text-align:center;">余额：{{balance}}</p>
       </confirm>
       <confirm v-model="showConfirm2"
       title="余额不足，前往充值吗？"
       @on-confirm="$router.push('/balanceRecharge')">
-        <p style="text-align:center;">余额：{{money}}</p>
+        <p style="text-align:center;">余额：{{balance}}</p>
       </confirm>
     </div>
     <toast v-model="showToast" type="text" :time="800" is-show-mask :text="toastText" width="20em"></toast>
@@ -81,6 +81,7 @@
 <script>
 import api from "../../api/Piles.js";
 import {Toast, TransferDom, Confirm, PopupPicker} from 'vux'
+import { mapState, mapGetters, mapMutations } from "vuex"
 const accountid = JSON.parse(localStorage.getItem("operatorUserItem")).accountid;
 const userItem = JSON.parse(localStorage.getItem("userItem")); //获取微信号
 export default {
@@ -113,6 +114,10 @@ export default {
     };
   },
 
+  computed: {
+    ...mapState(['balance'])
+  },
+
   components: {
     Toast,
     TransferDom,
@@ -125,7 +130,6 @@ export default {
   },
 
   mounted() {
-    this.money = this.$route.params.money
     this.getBill()
   },
 
@@ -146,7 +150,7 @@ export default {
       })
     },
     pay() {
-      if (this.money >= this.items.rent) {
+      if (this.balance >= this.items.rent) {
         this.showConfirm1 = true
       }else {
         this.showConfirm2 = true
@@ -236,7 +240,7 @@ export default {
       top: 185 / @width75;
       width: 30 / @width75;
       height: 30 / @width75;
-      background-color: rgb(26,161,169);
+      background-color: rgb(46,168,175);
       border-radius: 50%;
     }
     &::before {

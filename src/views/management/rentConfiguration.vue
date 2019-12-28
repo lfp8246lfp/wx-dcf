@@ -86,15 +86,15 @@ export default {
     Toast
   },
   mounted() {
-    console.log(this.$route)
+    console.log(this.$route.params)
     let room = this.$route.params
-    if (room.id) {
+    if (room.commaddress) {
       this.searchTenant()
     }
   },
   methods: {
     searchTenant() {
-      let roomid = this.$route.params.id
+      let roomid = this.$store.state.roomid
       api.selectTenantInfo({roomid}).then(res => {
         console.log(res, '获取租户')
         this.form.chatname = res.data.items[0].chatname
@@ -128,14 +128,13 @@ export default {
         this.showToast = true
         return
       }
-      let roomid = this.$route.params.id
       let time1 = this.form.starttime
       let time2 = this.form.endtime
       let rentTime = (Number(time2.substr(0,4)) - Number(time1.substr(0,4))) * 12 + Number(time2.substr(5,1)) - Number(time1.substr(5,1))
       let obj = {
         accountid,
         optType: 1,
-        roomid,
+        roomid: this.$store.state.roomid,
         rent: this.form.rent,
         automaticbill: 1,
         datepayment: 10,

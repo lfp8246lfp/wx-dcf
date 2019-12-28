@@ -25,6 +25,7 @@
         @on-confirm="onConfirm"
       >
         <p class="text-center">{{$t("ab.greater")}}</p>
+        <p class="text-align-center"></p>
       </confirm>
     </div>
         <p class="datano" v-show="datano">
@@ -35,22 +36,26 @@
     <ul>
       <li v-for="(item,month) in timer" :key="month">
         <div class="item">
+          <div class="icon">
+            <img src="../../assets/yuev@2x.png" alt>
+          </div>
+          <div class="detail">
             <h3>
-              <img src="../../assets/yuev@2x.png" alt>
               {{item.chatname}}
             </h3>
-            <p>
+            <p class="date">
               {{formatTimes(item.chargingdate)}}
             </p>
-            <p>
+            <p class="money">
               <span>金额：</span>
               {{item.chargingmoney}}
             </p>
-            <p>
+            <p class="note">
               <span>明细：</span>
               {{item.notes}}
             </p>
           </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -206,7 +211,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgb(235,235,235);
+  background-color: rgb(245,245,245);
     > img{
         position: absolute;
         right   : 39/@width75;
@@ -214,28 +219,52 @@ export default {
     }
 }
 ul {
-  padding-top: 80 / @width75;
+  padding-top: 100 / @width75;
   li {
-    margin: 10 / @width75;
-    padding: 20 / @width75;
-    border-radius: 30 / @width75;
     background-color: #fff;
   }
 }
 .item {
-      h3 {
-        font-size: 40 / @width75;
-        height: 60 / @width75;
-        line-height: 60 / @width75;
-        img {
-          width: 50 / @width75;
-          height: 50 / @width75;
-        }
-      }
-      p {
-        height: 50 / @width75;
-        line-height: 50 / @width75;
-      }
+  display: flex;
+  padding: 10 / @width75;
+  padding-bottom: 0;
+  .icon {
+    flex: 1;
+    position: relative;
+    text-align: center;
+    img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 80 / @width75;
+      height: 80 / @width75;
+    }
+  }
+  .detail {
+    flex: 6;
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 10 / @width75;
+    border-bottom: 1px solid rgb(235,235,235);
+    h3 {
+      font-size: 28 / @width75;
+      font-weight: 700;
+      height: 50 / @width75;
+      line-height: 50 / @width75;
+    }
+    p {
+      height: 40 / @width75;
+      line-height: 40 / @width75;
+    }
+    .date {
+      width: 100%;
+      color: rgb(153,153,153);
+    }
+    .money, .note {
+      width: 50%;
+    }
+  }
   }
   .datano {
     text-align: center;

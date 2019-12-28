@@ -307,29 +307,11 @@ export default {
             font-size  : 32 /@width75;
         }
     }
-  .datano {
-    text-align: center;
-    font-size: 32 / @width75;
-    margin: 32 / @width75;
-    padding-bottom: 32 / @width75;
-    color: rgb(153,153,153);
-    img {
-      width: 262 / @width75;
-      height: 210 / @width75;
-      margin: 320 / @width75 0 70 / @width75;
-    }
-  }
 }
 .time{
   padding   : 0 38/@width75;
   margin-top: 100/@width75;
 }
- .datano{
-      text-align    : center;
-      font-size     : 32/@width75;
-      margin        : 32/@width75;
-      padding-bottom: 32/@width75;
-  }
 .timeframe{
     width          : 100%;
     display        : flex;
@@ -356,6 +338,18 @@ export default {
   margin-top   : 60/@width75;
   font-size    : 36/@width75 !important;
 }
+  .datano {
+    text-align: center;
+    font-size: 32 / @width75;
+    margin: 32 / @width75;
+    padding-bottom: 32 / @width75;
+    color: rgb(153,153,153);
+    img {
+      width: 262 / @width75;
+      height: 210 / @width75;
+      margin: 320 / @width75 0 70 / @width75;
+    }
+  }
 </style>
 <style lang="less">
 @width75: 75rem;

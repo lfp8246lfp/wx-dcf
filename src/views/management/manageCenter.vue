@@ -76,8 +76,8 @@
       </confirm>
     </div>
     
-      <x-dialog v-model="isShowType" class="dialog-demo" :dialog-style="{'background-color': '#F5F5F5',}">
-          <img src="../../assets/muliti.png" class="close-image" @click="isShowType=false">
+      <div v-show="isShow" class="dialog">
+          <img src="../../assets/muliti.png" class="close-image" @click="isShow=false">
           <h1>选择档案类型</h1>
           <!-- <div class="itemdiv">
               <cell title="电表" :is-link="true" :link="{path:'/manageDevice'}">
@@ -89,7 +89,7 @@
                 >
               </cell>
           </div> -->
-         <div class="itemdiv">
+         <!-- <div class="itemdiv">
               <cell title="电瓶车充电桩" :is-link="true" :link="{path:'/chargeCar'}">
                 <img
                   slot="icon"
@@ -108,8 +108,18 @@
                 src="../../assets/room.png"
               >
             </cell>
+         </div> -->
+         <div class="manage-item" @click="$router.push('/chargeCar')">
+            <img src="../../assets/charging-car.png" alt="">
+            <h3>电瓶车充电桩</h3>
          </div>
-      </x-dialog>
+         <div class="manage-item" @click="$router.push('/manageRoom')">
+            <img src="../../assets/room.png" alt="">
+            <h3>房间</h3>
+         </div>
+      </div>
+      <div class="shadow" v-show="isShow"></div>
+
   </div>
 </template>
 
@@ -124,7 +134,7 @@ export default {
     return {
       mycal: "", //数据
       unbundlingshow: false, //提示
-      isShowType:false
+      isShow:false
     };
   },
   components: {
@@ -175,7 +185,7 @@ export default {
       this.unbundlingshow = true;
     },
     showType(){
-      this.isShowType=true;
+      this.isShow=true;
     },
     
     goCharging:function(event){
@@ -192,17 +202,37 @@ export default {
 </script>
 <style lang='less' scoped>
 @width75: 75rem;
-.dialog-demo {
+.shadow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+.dialog {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 90%;
+  background-color: #f5f5f5;
+  z-index: 100;
+  padding: 0 32 / @width75 50 / @width75;
+  box-sizing: border-box;
+  border-radius: 10px;
   .close-image{
-    float: right;
-    margin-top: 34 / @width75;
-    margin-right: 34 / @width75;
+    position: absolute;
+    top: 55 / @width75;
+    right: 50 / @width75;
+    width: 25 / @width75;
+    height: 25 / @width75;
   }
   h1{
-    padding-top: 0.48rem;
-    line-height: 0.66666667rem;
-    height: 0.66666667rem;
+    height: 140 / @width75;
+    line-height: 140 / @width75;
     font-size: 0.48rem;
+    text-align: center;
   }
   .weui-cell {
     padding: 34 / @width75;
@@ -212,15 +242,46 @@ export default {
     height: 16 / @width75;
   }
 }
- .itemdiv{
-    background-color: white;
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-radius: 20px;
+.itemdiv{
+  background-color: white;
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 20px;
+}
+.manage-item {
+  position: relative;
+  display: flex;
+  // width: 80%;
+  margin-bottom: 30 / @width75;
+  border-radius: 20px;
+  padding: 30 / @width75 50 / @width75;
+  background-color: #fff;
+  color: rgb(51,51,51);
+  font-size: 32 / @width75;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #eee;
+  img {
+    width: 80 / @width75;
+    height: 80 / @width75;
   }
+  h3 {
+    height: 80 / @width75;
+    padding-left: 35 / @width75;
+    line-height: 80 / @width75;
+  }
+  &::after {
+    content: '>';
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translate(0, -50%);
+    color: #aaa;
+    font-family: serif;
+  }
+}
 .center {
   background: #fafafa;
   padding-bottom: 125 / @width75;

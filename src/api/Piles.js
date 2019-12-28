@@ -6,10 +6,10 @@ var instance = axios.create({
     //  baseURL: 'http://116.62.116.120:8004'
     // 正式服务器地址
 
-    baseURL: 'http://192.168.0.18:8004'
+    // baseURL: 'http://192.168.0.18:8004'
     // 测试服务器地址
 
-    // baseURL: 'http://112.17.126.252:8011'
+    baseURL: 'http://112.17.126.252:8011'
     // 外网
 });
 var payment = axios.create({

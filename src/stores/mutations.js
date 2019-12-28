@@ -52,5 +52,13 @@ export default {
 
   [types.UPDATE_USER_FROM_WECHAT] (state, params) {
     state.userFromWechat = params
+  },
+
+  balanceChange (state, params) {
+    state.balance = params
+  },
+
+  changeRoom (state, params) {
+    state.roomid = params
   }
 }

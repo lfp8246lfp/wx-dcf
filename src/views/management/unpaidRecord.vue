@@ -22,11 +22,11 @@
             {{new Date(item.deadline).getDate() - new Date().getDate()}}
           </li>
         </ul>
-        <x-button @click.native="press(item, index)" :disabled="item.disabled">催款</x-button>
+        <x-button @click.native="press(item,index)" :ref="item.chatid">催款</x-button>
       </li>
     </ul>
-    <x-button @click.native="pressAll" id="pressAll" :disabled="disabled">{{pressAllText}}</x-button>
-    <toast v-model="showToast" type="text" :time="800" is-show-mask :text="toastText" width="20em"></toast>
+    <x-button @click.native="pressAll" id="pressAll">{{pressAllText}}</x-button>
+    <toast v-model="showToast" type="text" :time="800" is-show-mask :text="toastText" width="30em"></toast>
   </div>
 </template>
 
@@ -40,21 +40,23 @@ export default {
   data() {
     return {
       list: [
-        // {
-        //   "chatid": "omTdO1Qy25KGxzw4jKAGp4rtakCw",//用户微信id
-        //   "monthstr": "2019-12",//月份	
-        //   "roomid": 171.0,//房间id
-        //   "rent": 30.0,//房租	
-        //   "totalmoney": 30.0,//总金额
-        //   "deadline": "Dec 26, 2019 12:00:00 AM",//最终缴纳日期
-        //   "disc": "房租测试",//描述
-        //   "status": 2.0,//状态 未缴纳
-        //   "departmentid": 2355.0,
-        //   "chatname": "魏亚军",//租客名称
-        //   "phone": "15303727826",//租客手机号
-        //   "Overdue": false,//是否逾期
-        //   "overdueTime": 22.0// 逾期 就是逾期天数 未逾期 就是剩余缴纳纳天数
-        // }
+        {
+          "chatid": "563",//用户微信id
+          "monthstr": "2019-12",//月份	
+          "roomid": 171.0,//房间id
+          "rent": 30.0,//房租	
+          "totalmoney": 30.0,//总金额
+          "deadline": "Dec 26, 2019 12:00:00 AM",//最终缴纳日期
+          "disc": "房租测试",//描述
+          "status": 2.0,//状态 未缴纳
+          "departmentid": 2355.0,
+          "chatname": "魏亚军",//租客名称
+          "phone": "15303727826",//租客手机号
+          "Overdue": false,//是否逾期
+          "overdueTime": 22.0,// 逾期 就是逾期天数 未逾期 就是剩余缴纳纳天数
+          disabled: false, 
+          timer: 10000
+        },
       ],
       showToast: false,
       toastText: '',
@@ -75,20 +77,27 @@ export default {
   methods: {
     getList() {
       let obj = {
-        accountid: 15303727826,
+        accountid,
         pageNum: 1,
         pageSize: 10,
         status: 2
       }
       api.getFailurePay(obj).then(res => {
         console.log(res,'未缴费用户')
+        if (res.data.returnCode !== 1) return
         this.list = res.data.items.map(item => ({disabled: false, timer: 60000, ...item}))
       })
     },
-    press(item,index) {
+    press(item, index, all = '') {
+      if (item.disabled) {
+        if (all) return
+        this.toastText = '请不要频繁操作，一分钟后再试'
+        this.showToast = true
+        return
+      }
       this.list[index].disabled = true
       setTimeout(() => {
-        this.disabled = false
+        this.list[index].disabled = false
       }, this.list[index].timer)
       let date = new Date(item.deadline)
       let deadline = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
@@ -100,20 +109,23 @@ export default {
 	      "jumpUrl":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=omTdO1Qy25KGxzw4jKAGp4rtakCw&redirect_uri=http%3a%2f%2fgateway.statesky.cn%2fgatewayh5%2f%23%2fdataDetail%2f&response_type=code&scope=snsapi_base&state=1&conn"
       }
       api.SendWaringMsg(obj).then(res => {
-        console.log(res, '催款')
-        // this.toastText = '催款成功'
-        // this.showToast = true
+        console.log(res, '催款', index)
+        this.toastText = `${all}催款成功`
+        this.showToast = true
       })
     },
     pressAll() {
+      if (this.disabled) {
+        this.toastText = '请不要频繁操作，一分钟后再试'
+        this.showToast = true
+        return
+      }
       this.disabled = true
       setTimeout(() => {
-        this.disabled = true
+        this.disabled = false
       }, 60000)
-      this.list.forEach(ele => {
-        this.press(ele)
-        this.toastText = '全部催款成功，60秒后重试'
-        this.showToast = true
+      this.list.forEach((item,index) => {
+        this.press(item, index, '全部')
       })
     }
   },

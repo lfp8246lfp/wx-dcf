@@ -13,7 +13,7 @@
         </div>
         <div class="mine-header-middle">
           <p class="balance">{{$t("personal.balance")}}</p>
-          <p class="price">{{ this.money}}</p>
+          <p class="price">{{balance}}</p>
         </div>
         <div class="mine-header-right">
           <router-link to="/balanceRecharge">
@@ -22,93 +22,48 @@
         </div>
       </div>
       <div class="me-content">
-        <div v-for="(item, index) in list" :key="index" @click="btn(item.path)" class="item">
-          <img :src="'/static/icon/' + item.icon + '.png'" alt="">
-          <h3>{{item.title}}</h3>
+        <div class="item" @click="btn('/billingRecords')">
+          <img src="../assets/icon/personal/billRecord.png" alt="">
+          <h3>账单记录</h3>
         </div>
-    <!-- <group class="group1">
-          <cell :title="$t('personal.billrecord')" :is-link="true" :link="{path:'/billingRecords'}">
-            <img
-              slot="icon"
-              width="14"
-              style="display:block;margin-right:5px;"
-              src="../assets/icon/Section/record@2x.png"
-            >
-          </cell>
-          <div class = "tt">
-            <cell title="正在充电" value="正在充电的插头" :is-link="true" :link="{path:'/Charging'}">
-            <img
-              slot="icon"
-              width="10"
-              style="display:block;margin-right:5px;"
-              src="../assets/icon/Section/battery@2x.png"
-            >
-            </cell>
+        <div class="item" @click="btn('/Charging')">
+          <img src="../assets/icon/personal/charging.png" alt="">
+          <h3>正在充电</h3>
         </div>
-         <div class="tt">
-            <cell title=" 充电记录" :is-link="true" :link="{path:'/batteryRecord'}">
-              <img
-                slot="icon"
-                width="11"
-                style="display:block;margin-right:5px;"
-                src="../assets/icon/Section/notes@2x.png"
-              >
-            </cell>
-         </div>
-          <div class="tt" @click="skip()">
-            <cell :title="$t('personal.management')">
-              <img
-                slot="icon"
-                width="14"
-                style="display:block;margin-right:5px;"
-                src="../assets/icon/Section/manage@2x.png"
-              >
-            </cell>
-          </div>
-          <div class="tt" @click="isRegister()">
-            <cell :title="$t('personal.registerOperators')">
-              <img
-                slot="icon"
-                width="14"
-                style="display:block;margin-right:5px;"
-                src="../assets/icon/Section/manage@2x.png"
-              >
-            </cell>
-          </div>
-          <cell :title="$t('personal.agentAlliance')" :is-link="true" link="https://wj.qq.com/s/2230221/67bd">
-            <img
-              slot="icon"
-              width="14"
-              style="display:block;margin-right:5px;"
-              src="../assets/icon/Section/about@2x.png"
-            >
-          </cell>
-          <cell :title="$t('personal.problem')" :is-link="true" link="https://wj.qq.com/s/2230193/7c7d">
-            <img
-              slot="icon"
-              width="14"
-              style="display:block;margin-right:5px;"
-              src="../assets/icon/Section/question@2x.png"
-            >
-          </cell>
-          <cell :title="$t('personal.about')" :is-link="true" :link="{path:'/aboutUs'}">
-            <img
-              slot="icon"
-              width="14"
-              style="display:block;margin-right:5px;"
-              src="../assets/icon/Section/about@2x.png"
-            >
-          </cell>
-          <cell title="常见问题" :is-link="true" :link="{path:'/FAQ'}">
-            <img
-              slot="icon"
-              width="14"
-              style="display:block;margin-right:5px;"
-              src="../assets/icon/Section/question@2x.png"
-            >
-          </cell>
-      </group>
-        <div class="tc"></div> -->
+        <div class="item" @click="btn('/batteryRecord')">
+          <img src="../assets/icon/personal/chargeRecord.png" alt="">
+          <h3>充电记录</h3>
+        </div>
+        <div class="item" @click="btn('/payRent')">
+          <img src="../assets/icon/personal/payRent.png" alt="">
+          <h3>缴纳房租</h3>
+        </div>
+        <div class="item" @click="skip">
+          <img src="../assets/icon/personal/manage.png" alt="">
+          <h3>管理平台</h3>
+        </div>
+        <div class="item" @click="isRegister">
+          <img src="../assets/icon/personal/register.png" alt="">
+          <h3>注册物业-房东</h3>
+        </div>
+        <div class="item" @click="btn('https://wj.qq.com/s/2230221/67bd')">
+          <img src="../assets/icon/personal/agentJoin.png" alt="">
+          <h3>代理加盟</h3>
+        </div>
+        <div class="item" @click="btn('/aboutUs')">
+          <img src="../assets/icon/personal/aboutUs.png" alt="">
+          <h3>关于我们</h3>
+        </div>
+        <div class="item" @click="btn('/FAQ')">
+          <img src="../assets/icon/personal/question.png" alt="">
+          <h3>常见问题</h3>
+        </div>
+        <div class="item" @click="btn('https://wj.qq.com/s/2230193/7c7d')">
+          <img src="../assets/icon/personal/faultFeedback.png" alt="">
+          <h3>故障反馈</h3>
+        </div>
+        <div class="item"></div>
+        <div class="item"></div>
       </div>
     </div>
   </div>
@@ -124,7 +79,8 @@ var userItem = JSON.parse(localStorage.getItem("userItem"));
 export default {
   computed: {
     ...mapState({
-      token: state => state.token
+      token: state => state.token,
+      balance: state => state.balance
     }),
     ...mapGetters(["userInfos"])
   },
@@ -147,26 +103,11 @@ export default {
   },
   data: function() {
     return {
-      money: "",
       accountid: "",
       password: "",
       imgUrl: require("./../assets/avatar.png"),
       info: "",
-      list: [
-        {path: '/billingRecords', icon: 'billRecord', title: '账单记录'},
-        {path: '/Charging', icon: 'charging', title: '正在充电'},
-        {path: '/batteryRecord', icon: 'chargeRecord', title: '充电记录'},
-        {path: '/payRent', icon: 'payRent', title: '缴纳房租'},
-        {path: this.skip, icon: 'manage', title: '管理平台'},
-        {path: this.isRegister, icon: 'register', title: '注册物业-房东'},
-        {path: 'https://wj.qq.com/s/2230221/67bd', icon: 'agentJoin', title: '代理加盟'},
-        {path: '/aboutUs', icon: 'aboutUs', title: '关于我们'},
-        {path: '/FAQ', icon: 'question', title: '常见问题'},
-        {path: 'https://wj.qq.com/s/2230193/7c7d', icon: 'faultFeedback', title: '故障反馈'},
-        {},
-        {}
-      ],
-      link: 'https://wj.qq.com/s/2230193/7c7d'
+      // link: 'https://wj.qq.com/s/2230193/7c7d'
     };
   },
   methods: {
@@ -176,9 +117,10 @@ export default {
           chatid: userItem.openid
         })
         .then(res => {
+          console.log(res.data, '获取首页信息')
           if (res.data.returnCode == 1) {
             this.info = res.data;
-            this.money = res.data.balancevalue;
+            this.$store.commit('balanceChange', res.data.balancevalue)
           } else {
             wechat.wxAuthJumpperson();
           }
@@ -232,15 +174,12 @@ export default {
         });
     },
     btn(path) {
-      if (!path) return
-      if (typeof path === 'function') {
-        path()
-      } else if (path.startsWith('/')) {
+      if (path.startsWith('/')) {
         if (path === '/payRent') {
           this.$router.push({
             name: 'payRent',
             params: {
-              money: this.money
+              balance: this.balance
             }
           })
         }

@@ -172,10 +172,23 @@ export default {
       devlist: { //数据
         total: 0,
         data: [
-          {"chatname":"555","phone":"13033629137","createtime":"Dec 12, 2019 4:41:32 PM","balancevlaue":0.0,"commaddress":"20191212","metername":"1","rtuid":17578.0,"chatid":"omTdO1VpnX4iYCtVL1wPAIkPQV_c","pricevalue":1.0,"factoryid":1.0,"devicetype":1.0,"alarmenergy":20.0,"priceid":295.0,"bandstatus":1.0,"signal":""},
-          {"chatname":"555","phone":"13033629137","createtime":"Dec 12, 2019 4:41:32 PM","balancevlaue":0.0,"commaddress":"20191212","metername":"1","rtuid":17578.0,"chatid":"omTdO1VpnX4iYCtVL1wPAIkPQV_c","pricevalue":1.0,"factoryid":1.0,"devicetype":1.0,"alarmenergy":20.0,"priceid":295.0,"bandstatus":1.0,"signal":""},
-          {"chatname":"555","phone":"13033629137","createtime":"Dec 12, 2019 4:41:32 PM","balancevlaue":0.0,"commaddress":"20191212","metername":"1","rtuid":17578.0,"chatid":"omTdO1VpnX4iYCtVL1wPAIkPQV_c","pricevalue":1.0,"factoryid":1.0,"devicetype":1.0,"alarmenergy":20.0,"priceid":295.0,"bandstatus":1.0,"signal":""},
-          {"chatname":"555","phone":"13033629137","createtime":"Dec 12, 2019 4:41:32 PM","balancevlaue":0.0,"commaddress":"20191212","metername":"1","rtuid":17578.0,"chatid":"omTdO1VpnX4iYCtVL1wPAIkPQV_c","pricevalue":1.0,"factoryid":1.0,"devicetype":1.0,"alarmenergy":20.0,"priceid":295.0,"bandstatus":1.0,"signal":""}
+          {
+            "chatname":"555",
+            "phone":"13033629137",
+            "createtime":"Dec 12, 2019 4:41:32 PM",
+            "balancevlaue":0.0,
+            "commaddress":"20191212",
+            "metername":"1",
+            "rtuid":17578.0,
+            "chatid":"omTdO1VpnX4iYCtVL1wPAIkPQV_c",
+            "pricevalue":1.0,
+            "factoryid":1.0,
+            "devicetype":1.0,
+            "alarmenergy":20.0,
+            "priceid":295.0,
+            "bandstatus":1.0,
+            "signal":""
+          },
         ]
       }, //数据
       activeIndex: -1, //删除对应的数据
@@ -327,8 +340,7 @@ export default {
     },
     // 添加
     add: function() {
-      let roomid = this.$route.params.id
-      this.$router.push({ name: "equipmentnew", params: {roomid} });
+      this.$router.push('/equipmentnew');
     },
     // 告警阀值
     refund1(item) {
@@ -355,12 +367,11 @@ export default {
     //   });
     // },
     getDeviceList() {
-      const roomid = this.$route.params.id
       let obj = {
         accountid,
         pageNum: 1,
         pageSize: 10,
-        roomid
+        roomid: this.$store.state.roomid
       }
       api.getDevInfo(obj).then(res => {
         console.log(res, '设备列表')
@@ -390,12 +401,13 @@ export default {
       //     }
       //   }
       // });
-      let obj = {
-        accountid,
-        serachValue: this.devreqnew.commaddress
-      }
-      api.selectAllDev(obj).then(res => {
-      })
+      
+      // let obj = {
+      //   accountid,
+      //   serachValue: this.devreqnew.commaddress
+      // }
+      // api.selectAllDev(obj).then(res => {
+      // })
     },
     // 加载更多数据
     loadMore() {

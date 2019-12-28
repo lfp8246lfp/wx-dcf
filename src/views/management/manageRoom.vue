@@ -1,191 +1,94 @@
 <!-- 房间管理 -->
 <template>
   <div id="room" @click="activeIndex = -1">
-      <ul>
-        <li v-for="(item,index) in roomList" :key="index">
-          <div class="item">
-            <div class="head">
-              <img src="../../assets/icon/house.png" alt="">
-              <h2>{{item.roomname}}</h2>
-              <span class="status"></span>
-              <div class="tool" @click.stop="showcontent(index)">
-                <img src="../../assets/icon/1@2x.png">
-              </div>
+    <ul>
+      <li v-for="(item,index) in roomList" :key="index">
+        <div class="item">
+          <div class="head">
+            <img src="../../assets/icon/house.png" alt="">
+            <h2>{{item.roomname}}</h2>
+            <span class="status"></span>
+            <div class="tool" @click.stop="showcontent(index)">
+              <img src="../../assets/icon/1@2x.png">
             </div>
-
-            <div class="operation" v-show="activeIndex === index">
-              <div class="square"></div> 
-              <div class="edit" @click="jumped(item)">
-                <img src="../../assets/icon/bianjihoutai@2x.png">
-                <span class="editor">编辑</span>
-              </div>
-              <div class="delete" @click="remove(item)">
-                <img src="../../assets/icon/shanchu@2x.png">
-                <span>删除</span>
-              </div>
-            </div>
-
-            <div class="content">
-                <ul>
-                    <li>
-                        <span>用户名：</span>
-                        {{item.accountid}}
-                    </li>
-                    <li>
-                        <span>所属区域：</span>
-                        {{item.province + ' ' + item.town + ' ' + item.region}}
-                    </li>
-                    <li>
-                        <span>详细地址：</span>
-                        {{item.disc}}
-                    </li>
-                </ul>
-            </div>
-
           </div>
-
-          <div class="btngroup">
-            <button @click="rentConfig(item)">
-                房租配置
-            </button>
-            <button @click="$router.push({name: 'manageDevice', params: {id: item.id}})">
-                房间设备
-            </button>
-            <!-- <button @click="$router.push('/monthConsumption')">
-                月用量编辑
-            </button> -->
+          <div class="operation" v-show="activeIndex === index">
+            <div class="square"></div> 
+            <div class="edit" @click="jumped(item)">
+              <img src="../../assets/icon/bianjihoutai@2x.png">
+              <span class="editor">编辑</span>
+            </div>
+            <div class="delete" @click="remove(item)">
+              <img src="../../assets/icon/shanchu@2x.png">
+              <span>删除</span>
+            </div>
           </div>
-        </li>
-      </ul>
-      <toast v-model="showToast" type="text" :time="800" is-show-mask :text="toastText" width="20em"></toast>
-    <div v-transfer-dom>
-      <confirm v-model="show" :title="$t('device.tips')" :confirm-text="$t('device.determine')" :cancel-text="$t('device.cancel')" @on-confirm="onConfirm">
-        <p class="text-center">{{$t("device.suregate")}}</p>
-      </confirm>
-    </div>
-    <div v-transfer-dom>
-      <confirm v-model="isshow" :title="$t('device.tips')" :confirm-text="$t('device.determine')" :cancel-text="$t('device.cancel')" @on-confirm="onConfirm">
-        <p class="text-center">{{$t("device.sureclose")}}</p>
-      </confirm>
-    </div>
-    <div v-transfer-dom>
-      <confirm v-model="clearshow" :title="$t('device.tips')" :confirm-text="$t('device.determine')" :cancel-text="$t('device.cancel')" @on-confirm="onConfirmclear">
-        <p class="text-center">{{$t("device.cantdo")}}</p>
-      </confirm>
-    </div>
+          <div class="content">
+              <ul>
+                  <li>
+                      <span>用户名：</span>
+                      {{item.accountid}}
+                  </li>
+                  <li>
+                      <span>所属区域：</span>
+                      {{item.province + ' ' + item.town + ' ' + item.region}}
+                  </li>
+                  <li>
+                      <span>详细地址：</span>
+                      {{item.disc}}
+                  </li>
+              </ul>
+          </div>
+        </div>
+        <div class="btngroup">
+          <button @click="rentConfig(item)">
+              房租配置
+          </button>
+          <button @click="roomDev(item.id)">
+              房间设备
+          </button>
+          <!-- <button @click="$router.push('/monthConsumption')">
+              月用量编辑
+          </button> -->
+        </div>
+      </li>
+    </ul>
+    <p class="datano" v-show="datano">
+      <img src="../../assets/noData.png" alt="">
+      <br>
+      暂无数据
+    </p>
+    <toast v-model="showToast" type="text" :time="800" is-show-mask :text="toastText" width="20em"></toast>
     <div v-transfer-dom>
       <confirm v-model="removeshow" :title="$t('device.tips')" :confirm-text="$t('device.determine')" :cancel-text="$t('device.cancel')" @on-confirm="onConfirmremove">
         <p class="text-center">{{$t("device.confirmdeletion")}}</p>
       </confirm>
     </div>
-    <div v-transfer-dom>
-      <x-dialog v-model="showDialog" class="dialog-demo" @on-hide="intercept">
-        <cell :title="$t('device.wait')"></cell>
-        <div>
-          <box gap="10px">
-            <x-progress :percent="percent" :show-cancel="false"></x-progress>
-            <cell :title="waitrecvMsg"></cell>
-          </box>
-        </div>
-        <div @click="showDialog=false">
-          <span class="vux-close" v-if="showcancle">{{$t("device.cancel")}}</span>
-        </div>
-      </x-dialog>
-    </div>
-    <div class="add" @click="add()" ref="add" :class="{hidden:ishidd}" >
+    <div class="add" @click="add">
       {{$t("eleprice.add")}}
     </div>
   </div>
 </template>
 
 <script>
-import {
-  Confirm,
-  TransferDom,
-  XDialog,
-  XProgress,
-  Cell,
-  Box,
-  XButton,
-  Alert,
-  Toast
-} from "vux";
-import api from "../../api/Piles.js";
-import { getErrorMsg } from "@/tools/commonJs/common";
-const accountid = JSON.parse(localStorage.getItem("operatorUserItem")).accountid;
-// const accountid = '15303727826';
-// const accountid = '15988873909';
-const userItem = JSON.parse(localStorage.getItem("userItem")); //获取微信号
-import wechat from "@/tools/wechat";
+import { Confirm, TransferDom, Toast } from 'vux'
+import api from '../../api/Piles.js'
+import { mapMutations } from 'vuex'
+const accountid = JSON.parse(localStorage.getItem('operatorUserItem')).accountid
+// const accountid = '15303727826'
+// const accountid = '15988873909'
+const userItem = JSON.parse(localStorage.getItem('userItem')) //获取微信号
 export default {
   data() {
     return {
       roomList: [],
       showToast: false,
       toastText: '',
-      clearshow: false, //提示不能操作
       datano: false, //暂无数据
-      register: true, //是否已经注册
-      devlist: { //数据
-        total: 0,
-        data: []
-      }, //数据
       activeIndex: -1, //删除对应的数据
-      isEmpty: true,
-      devreq: {
-        //传递的参数
-        accountid,
-        pageSize: 4,
-        pageNum: 1
-      },
-      devreqnew: { //设备传递的参数
-        commaddress: "",
-        accountid,
-        pageSize: 4,
-        pageNum: 1
-      },
-    //   a: "1",
-      tokenreq: {
-        //获取token的请求参数
-        meterno: "",
-        chargevalue: "0",
-        isclear: 1
-      },
-      tokenvalue: "", //获取的token值
-      commad: "",
-      switchList: {
-        objectid: 17122,
-        objecttype: 1,
-        requestid: "requestid",
-        taskid: 5579,
-        isresive: 0,
-        afn: "3",
-        content: {
-          name: "F11",
-          data: ""
-        }
-      },
-      interrupt: false,
-      percent: 0, //进度
-      showDialog: false,
-      waitrecvMsg: "", //提示信息
-      showcancle: false,  //取消
-      isshow: false, //合闸显隐
-      recvTimeoutCount: 10,
-      show: false, //弹框是否显示
       removeshow: false, //删除提示
-      prompt: "",
-      tokenreq: {
-        //获取token的请求参数
-        meterno: "",
-        chargevalue: "0",
-        isclear: 1
-      },
-      items: "",
-      status: true,
-      ishidd:false,
-      item: ''
-        // 暂存要删除房间的信息
+      item: {}, // 暂存要删除房间的信息
+      datano: true
     };
   },
   directives: {
@@ -193,70 +96,58 @@ export default {
   },
   components: {
     Confirm,
-    XDialog,
-    XProgress,
-    Cell,
-    Box,
-    XButton,
-    Alert,
     Toast
   },
-
-  computed: {},
-
-  mounted() {
-    // this.loadMore();
-    // window.onresize = () => {
-    //   if(this.$refs.add.getBoundingClientRect().top<420){
-    //     this.ishidd=true;
-    //   }else if(this.$refs.add.getBoundingClientRect().top==0){
-    //     this.ishidd=false;
-    //   }
-    // }
+  created() {
     this.getRoomList()
   },
-
   methods: {
-      getRoomList() {
-          let obj = {
-              pageNum: 1,
-              pageSize: 10,
-              accountid
-          }
-          api.getUnitList(obj).then(res => {
-              console.log(res, '房间列表')
+    getRoomList() {
+        let obj = {
+            pageNum: 1,
+            pageSize: 10,
+            accountid
+        }
+        api.getUnitList(obj).then(res => {
+            console.log(res, '房间列表')
+            if (res.data.total > 0) {
               this.roomList = res.data.items
-          })
-      },
-      rentConfig(item) {
-        console.log(item, 'item')
-        if (item.renttotal > 0) {
-          this.$router.push({
-            name: 'tenantsRecord',
-            params: {id: item.id}
-          })
-          return
-        }
-        if (item.rtunum < 1) {
-          this.toastText = '该房间暂时不能配置房租'
-          this.showToast = true
-        } else if (item.rtunum > 1) {
-          this.$router.push({name: 'searchTenant', params: item})
-        } else {
-          this.$router.push({name: 'rentConfiguration', params: item})
-        }
-      },
+              this.datano = false
+            } else {
+              this.datano = true
+            }
+        })
+    },
+    rentConfig(room) {
+      console.log(room, 'room')
+      this.$store.commit('changeRoom', room.id)
+      if (room.renttotal > 0) {
+          // 已经有租房用户时，直接去租客列表
+        this.$router.push('/tenantsRecord')
+        return
+      }
+      if (room.rtunum < 1) {
+          // 房间下没有设备时，不能配置房租
+        this.toastText = '该房间暂时不能配置房租'
+        this.showToast = true
+      } else if (room.rtunum > 1) {
+          // 房间下设备数大于1时，选择租户
+        this.$router.push('/searchTenant')
+      } else {
+          // 房间下设备数是1时，配置房租
+        this.$router.push('/rentConfiguration')
+      }
+    },
     showcontent: function(index) {
       if (this.activeIndex == index && this.activeIndex != -1) {
-        this.activeIndex = -1;
+        this.activeIndex = -1
       } else {
-        this.activeIndex = index;
+        this.activeIndex = index
       }
     },
     // 删除
     remove(item) {
-      this.removeshow = true;
-      this.prompt = item.rtuid;
+      this.removeshow = true
       this.item = item
     },
     // 确认删除
@@ -266,260 +157,23 @@ export default {
       api.optUnit(obj).then(res => {
         console.log(res, '删除房间')
         this.getRoomList()
+        this.toastText = '删除成功'
+        this.showToast = true
       })
-      // this.$store
-      //   .dispatch("AC_DeleteDevInfo", {
-      //     rtuid: this.prompt
-      //   })
-      //   .then(res => {
-      //     if (res.data.returncode == 1) {
-      //       this.$router.go(0);
-      //     }
-      //   })
     },
-    // 分享
-    shares(item){
-      wechat.share(item);
+    roomDev(roomid) {
+      this.$store.commit('changeRoom', roomid)
+      this.$router.push('/manageDevice')
     },
-    onConfirmclear() {},
     // 编辑
     jumped(item) {
       console.log(item, '编辑参数')
-      this.$router.push({ name: "editRoom", params: item });
+      this.$router.push({ name: 'editRoom', params: item })
     },
-
     // 添加
     add() {
-      this.$router.push({ path: "/editRoom" });
+      this.$router.push({ path: '/editRoom' })
     },
-    // 告警阀值
-    refund1(item) {
-      
-      this.$router.push({ path: "/managetry", query: { funditem: item } });
-    },
-
-    //   获取设备
-    getDevice(fn) {
-      api.GetDevInfo(this.devreqnew).then(res => {
-        this.devlist.total = res.data.total;
-        if (this.devreqnew.pageNum > 1) {
-          this.devlist.data = this.devlist.data.concat(res.data.devUsersItems);
-        } else {
-          this.devlist.data = res.data.devUsersItems;
-        }
-        if (res.data.total == 0) {
-          this.datano = true;
-        }
-        fn();
-      });
-    },
-    // 搜索
-    search: function() {
-      api.GetDevInfo(this.devreqnew).then(res => {
-        this.devlist.total = res.data.total;
-        if (this.devreqnew.pageNum > 1) {
-          this.devlist.data = this.devlist.data.concat(res.data.devUsersItems);
-        } else {
-          this.devlist.data = res.data.devUsersItems;
-        }
-        if (this.datano == true) {
-          this.datano = false;
-          if (res.data.total == 0) {
-            this.datano = true;
-          }
-        } else {
-          if (res.data.total == 0) {
-            this.datano = true;
-          }
-        }
-      });
-    },
-    // 加载更多数据
-    loadMore() {
-    },
-
-    // 根据继电器状态返回
-    changeStatus(value) {
-      if (value == 1) {
-        return this.$t("device.close");
-      } else return this.$t("device.sluicegate");
-    },
-
-    // 确定拉闸合闸
-    onConfirm() {
-      if (this.items.commaddress.length > 11) {
-        this.commad = this.items.commaddress.slice(-11);
-      } else if (this.items.commaddress.length < 11) {
-        this.commad = this.items.commaddress;
-        for (let i = this.items.commaddress.length; i < 11; i++) {
-          this.commad = "0" + this.commad;
-        }
-      }
-      this.tokenreq.meterno = this.commad;
-      // 获取token
-      api.GetToken(this.tokenreq).then(res => {
-        this.tokenvalue = res.data.tokenvalue.replace(/-/g, "");
-        this.sendData(this.items);
-      });
-    },
-    // 发送数据
-    sendData(item) {
-      this.switchList.objectid = item.rtuid;
-      this.switchList.content.data = this.tokenvalue;
-      if (this.status == true) {
-        this.switchList.content.data = "0";
-      } else {
-        this.switchList.content.data = "1";
-      }
-      this.genTaskid();
-      this.genRequestid();
-      this.$store.dispatch("AC_SendCharing", this.switchList).then(res => {
-        // console.log(res.data);
-        if (res.data.success == 1) {
-          this.receiveData();
-        } else {
-          this.$store.commit("UPDATE_TOAST", "失败");
-        }
-      });
-    },
-    // 接收数据
-    receiveData() {
-      this.$store.dispatch("AC_ReceiveCharing", this.switchList).then(res => {
-        if (this.interrupt) {
-          this.displayTimeout = false;
-          this.percent = 0;
-        } else {
-          if (this.recvTimeoutCount == 10) {
-            this.showDialog = true;
-          }
-          this.percent = ((10 - this.recvTimeoutCount) / 10) * 100;
-        }
-
-        if (res.data.isresive == 0 && this.recvTimeoutCount > 0) {
-          setTimeout(() => {
-            this.recvTimeoutCount--;
-            this.receiveData();
-          }, 5000);
-        } else if (
-          res.data.isresive == 1 &&
-          res.data.content.data[0].result == 0
-        ) {
-          this.showcancle = true;
-          this.percent = 100;
-          this.waitrecvMsg = "成功";
-        } else if (
-          res.data.isresive == 1 &&
-          res.data.content.data[0].result == 1
-        ) {
-          this.percent = 100;
-          this.showcancle = true;
-          this.waitrecvMsg = getErrorMsg(
-            res.data.content.data[0].errortype,
-            res.data.content.data[0].errorcode
-          );
-        } else {
-          this.percent = 100;
-          this.waitrecvMsg = "超时";
-          this.showcancle = true;
-        }
-      });
-    },
-    intercept() {
-      this.interrupt = false;
-      this.recvTimeoutCount = 10;
-      this.showDialog = false;
-      this.percent = 0;
-      this.waitrecvMsg = "";
-    },
-    genTaskid() {
-      this.switchList.taskid = this.genRandomNum(1000, 9999);
-    },
-    genRequestid() {
-      this.switchList.requestid = this.randomWord(false, 8, 8);
-    },
-    genRandomNum(min, max) {
-      let range = max - min;
-      let rand = Math.random();
-      return min + Math.round(rand * range);
-    },
-    randomWord(randomFlag, min, max) {
-      let str = "",
-        range = min,
-        arr = [
-          "0",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z"
-        ];
-      let pos;
-      // 随机产生
-      if (randomFlag) {
-        range = Math.round(Math.random() * (max - min)) + min;
-      }
-      for (var i = 0; i < range; i++) {
-        pos = Math.round(Math.random() * (arr.length - 1));
-        str += arr[pos];
-      }
-      return str;
-    }
   },
 };
 </script>
@@ -655,10 +309,6 @@ export default {
     background: rgb(53, 186, 182);
     color: white;
   }
-  .hidden{
-    position:static;
-    margin-top: 30/@width75;
-  }
 }
 </style>
 <style lang="less">
@@ -730,4 +380,16 @@ export default {
 .vux-cell-primary p{
   width: 104%;
 }
+  .datano {
+    text-align: center;
+    font-size: 32 / @width75;
+    margin: 32 / @width75;
+    padding-bottom: 32 / @width75;
+    color: rgb(153,153,153);
+    img {
+      width: 262 / @width75;
+      height: 210 / @width75;
+      margin: 320 / @width75 0 70 / @width75;
+    }
+  }
 </style>

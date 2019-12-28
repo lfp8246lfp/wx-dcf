@@ -40,7 +40,7 @@ export default {
 
   methods: {
     searchTenant() {
-      let roomid = this.$route.params.id
+      let roomid = this.$store.state.roomid
       api.selectTenantInfo({roomid}).then(res => {
         console.log(res, '查询租客')
         if (res.data.items.length > 0) {
@@ -51,9 +51,7 @@ export default {
         }
       })
     },
-    pickTenant(item) {
-      let params = item
-      params.roomid = this.$route.params.id
+    pickTenant(params) {
       console.log(params, 'params')
       this.$router.push({
         name: 'rentConfiguration',

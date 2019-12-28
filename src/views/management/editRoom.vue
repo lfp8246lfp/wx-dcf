@@ -7,13 +7,17 @@
             <x-address title="省市区" v-model="addressArr" :list="addressData" @on-hide="hide" placeholder="请选择地址"></x-address>
             <x-input title="详细地址" v-model="form.disc" placeholder="请输入详细地址" @on-click-clear-icon="clear('disc')"></x-input>
         </group>
+        <confirm v-model="removeshow" title="提示" confirm-text="确定" cancel-text="取消" @on-confirm="onConfirm">
+          <p>继续操作？</p>
+        </confirm>
+        <toast v-model="showToast" type="text" width="15em" :time="800" :text="toastText"></toast>
         <x-button @click.native="editRoom">确定</x-button>
     </div>
 </template>
 <script>
 import axios from 'axios'
 import api from "../../api/Piles.js"
-import { Group, XButton, XInput, TransferDom, Confirm, XAddress, ChinaAddressV4Data } from "vux"
+import { Group, XButton, XInput, TransferDom, Confirm, XAddress, ChinaAddressV4Data, Toast } from "vux"
 const accountid = JSON.parse(localStorage.getItem("operatorUserItem")).accountid
 export default {
   data() {
@@ -30,6 +34,9 @@ export default {
         addressData: ChinaAddressV4Data,
         optype: 1,
         id: '',
+        toastText: '',
+        showToast: false,
+        removeshow: false
     }
   },
   components: {
@@ -38,49 +45,72 @@ export default {
     XInput,
     Confirm,
     TransferDom,
-    XAddress
+    XAddress,
+    Toast
   },
   mounted() {
-    let info = this.$route.params
-    console.log(info)
-    if (!info.id) {
+    let room = this.$route.params
+    if (!room.id) {
+        // 新增
         this.optype = 1
         this.id = null
         return
     }
-    this.form.roomname = info.roomname
-    this.form.householdName = info.accountid
-    this.form.disc = info.disc
-    this.form.province = info.province
-    this.form.town = info.town
-    this.form.region = info.region
+    // 编辑
+    this.form.roomname = room.roomname
+    this.form.householdName = room.accountid
+    this.form.disc = room.disc
+    this.form.province = room.province
+    this.form.town = room.town
+    this.form.region = room.region
     axios('../static/json/map.json').then(res => {
-        let p = res.data.find(item => item.value === info.province)
-        let t = p.children.find(item => item.value === info.town)
-        let r = t.children.find(item => item.value === info.region)
+        let p = res.data.find(item => item.value === room.province)
+        let t = p.children.find(item => item.value === room.town)
+        let r = t.children.find(item => item.value === room.region)
         this.addressArr = [p.id, t.id, r.id]
     })
     this.optype = 2
-    this.id = info.id
+    this.id = room.id
   },
   methods: {
       editRoom() {
-          let obj = {
-              accountid,
-              optype: this.optype,
-              id: this.id,
-              ...this.form
+          if (!this.form.roomname.trim()) {
+            this.toastText = '请输入房间名称'
+            this.showToast = true
+            return
+          } else if (!this.form.householdName.trim()) {
+            this.toastText = '请输入用户名'
+            this.showToast = true
+            return
+          } else if (!this.form.disc.trim()) {
+            this.toastText = '请输入详细地址'
+            this.showToast = true
+            return
+          } else if (!this.form.province.trim()) {
+            this.toastText = '请选择省市区'
+            this.showToast = true
+            return
           }
-          api.optUnit(obj).then(res => {
-              console.log(res, '新增/修改房间')
-              this.$router.push('/manageRoom')
-          })
+          this.removeshow = true
+      },
+      onConfirm() {
+        let obj = {
+            accountid,
+            optype: this.optype,
+            id: this.id,
+            ...this.form
+        }
+        api.optUnit(obj).then(res => {
+            console.log(res, '新增/修改房间')
+            this.$router.push('/manageRoom')
+        })
       },
       clear(val) {
           this.form[val] = ''
       },
       hide(val) {
           axios('../static/json/map.json').then(res => {
+              if (!this.addressArr[0]) return // 当没有选择时，不用进行之后的操作
               let p = res.data.find(item => item.id === this.addressArr[0])
               let t = p.children.find(item => item.id === this.addressArr[1])
               let r = t.children.find(item => item.id === this.addressArr[2])
