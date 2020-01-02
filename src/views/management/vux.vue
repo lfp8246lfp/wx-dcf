@@ -1,157 +1,180 @@
 <template>
-  <div style="height: 1000px">
+  <div>
 
-    <group>
-      <x-switch v-model="show" :title="$t('Toggle')"></x-switch>
-      <x-switch v-model="show2" :title="$t('use .sync')"></x-switch>
-      <x-switch v-model="showToast" :title="$t('show toast')"></x-switch>
-      <x-switch v-model="showHideOnBlur" :title="$t('hide on clicking mask')"></x-switch>
-      <x-switch v-model="showDialogStyle" :title="$t('Toggle')" :inline-desc="$t('custom dialog style')"></x-switch>
+    <group title="禁用内置验证及显示成功或者错误样式">
+      <x-input title="禁用验证" placeholder="I'm placeholder" novalidate :icon-type="iconType" @on-blur="onBlur" placeholder-align="right" @on-click-clear-icon="clearFn" :show-clear="true" v-model="input1"></x-input>
+    </group>
+    <div style="padding:15px;">
+      <x-button @click.native="iconType = 'success'" type="primary"> set success</x-button>
+      <x-button @click.native="iconType = 'error'" type="primary"> set error</x-button>
+      <x-button @click.native="iconType = ''" type="primary"> set empty</x-button>
+    </div>
+
+    <group title="is-type传入function">
+      <x-input title="必须输入2333" :is-type="be2333" placeholder="I'm placeholder"></x-input>
     </group>
 
-    <div v-transfer-dom>
-      <x-dialog v-model="showToast" class="dialog-demo">
-        <div style="padding:15px;">
-          <x-button @click.native="doShowToast" type="primary">show toast</x-button>
-        </div>
-        <div @click="showToast=false">
-          <span class="vux-close"></span>
-        </div>
-      </x-dialog>
-    </div>
-
-    <div v-transfer-dom>
-      <x-dialog v-model="show" class="dialog-demo">
-        <div class="img-box">
-          <img src="https://ws1.sinaimg.cn/large/663d3650gy1fq6824ur1dj20ia0pydlm.jpg" style="max-width:100%">
-        </div>
-        <div @click="show=false">
-          <span class="vux-close"></span>
-        </div>
-      </x-dialog>
-    </div>
-
-    <div v-transfer-dom>
-      <x-dialog :show.sync="show2" class="dialog-demo">
-        <div class="img-box">
-          <img src="https://ws1.sinaimg.cn/large/663d3650gy1fq6824ur1dj20ia0pydlm.jpg" style="max-width:100%">
-        </div>
-        <div @click="show2=false">
-          <span class="vux-close"></span>
-        </div>
-      </x-dialog>
-    </div>
-
-    <div v-transfer-dom>
-      <x-dialog v-model="showHideOnBlur" class="dialog-demo" hide-on-blur>
-        <div class="img-box">
-          <img src="https://ws1.sinaimg.cn/large/663d3650gy1fq6824ur1dj20ia0pydlm.jpg" style="max-width:100%">
-        </div>
-        <div @click="showHideOnBlur=false">
-          <span class="vux-close"></span>
-        </div>
-      </x-dialog>
-    </div>
-
-    <div v-transfer-dom>
-      <x-dialog v-model="showDialogStyle" hide-on-blur :dialog-style="{'max-width': '100%', width: '100%', height: '50%', 'background-color': 'transparent'}">
-        <p style="color:#fff;text-align:center;" @click="showDialogStyle = false">
-          <span style="font-size:30px;">HELLO WORLD</span>
-          <br>
-          <br>
-          <x-icon type="ios-close-outline" style="fill:#fff;"></x-icon>
-        </p>
-      </x-dialog>
-    </div>
-
-    <group style="padding-top: 300px">
-      <x-switch v-model="showScrollBox" :title="$t('long long content')"></x-switch>
+    <group title="mask">
+      <x-input title="手机号码格式化" mask="999 9999 9999" v-model="maskValue" :max="13" is-type="china-mobile"></x-input>
+      <cell title="value" :value="maskValue"></cell>
+      <x-input title="(99) 9-99" mask="(99) 9-99" v-model="maskValue2" :max="9"></x-input>
     </group>
 
-    <div v-transfer-dom>
-      <x-dialog v-model="showScrollBox" class="dialog-demo">
-        <p class="dialog-title">Long content</p>
-        <div class="img-box" style="height:100px;padding:15px 0;overflow:scroll;-webkit-overflow-scrolling:touch;">
-          <p v-for="i in 20">{{i}}</p>
-        </div>
-        <div @click="showScrollBox=false">
-          <span class="vux-close"></span>
-        </div>
-      </x-dialog>
+    <group title="使用icon代替title">
+      <x-input title="必须输入2333" :is-type="be2333" placeholder="I'm placeholder">
+        <img slot="label" style="padding-right:10px;display:block;" src="http://dn-placeholder.qbox.me/110x110/FF2D55/000" width="24" height="24">
+      </x-input>
+    </group>
+
+    <group title="max is alias to maxlength">
+      <x-input title='max=5' :max="5" @on-change="change" v-model="maxValue"></x-input>
+    </group>
+
+    <group title="debounce = 1000">
+      <x-input title='debounce' :debounce="500" @on-change="change" v-model="debounceValue"></x-input>
+    </group>
+
+    <group title="disabled">
+      <x-input title='value' text-align="right" disabled v-model="disabledValue"></x-input>
+    </group>
+
+    <group title="set type = tel">
+      <x-input title='value' type="tel"></x-input>
+    </group>
+
+
+    <group title="html title">
+      <x-input label-width="4em" :title='`<span style="${style}">hello</span>`' placeholder="I'm placeholder"></x-input>
+    </group>
+    <div style="padding:15px;">
+      <x-button @click.native="style = 'color:red;'" type="primary">set red</x-button>
+      <x-button @click.native="style = 'color:green'" type="primary">set green</x-button>
+      <x-button @click.native="style = 'color:#000'" type="primary">set default</x-button>
     </div>
+
+    <group title="Default">
+      <x-input title="message" placeholder="I'm placeholder"></x-input>
+    </group>
+
+    <group title="不显示清除按钮">
+      <x-input title="message" required placeholder="I'm placeholder" :show-clear="false" autocapitalize="characters"></x-input>
+    </group>
+
+    <group title="focus事件">
+      <x-input title="focus-handler" placeholder="focus me!" :show-clear="true" @on-focus="onFocus"></x-input>
+    </group>
+
+    <group title="set is-type=china-name">
+      <x-input title="姓名" name="username" placeholder="请输入姓名" is-type="china-name"></x-input>
+    </group>
+
+    <group title="set keyboard=number and is-type=china-mobile">
+      <x-input title="手机号码" name="mobile" placeholder="请输入手机号码" keyboard="number" is-type="china-mobile"></x-input>
+    </group>
+
+    <group title="set is-type=email">
+      <x-input title="邮箱" name="email" placeholder="请输入邮箱地址" is-type="email"></x-input>
+    </group>
+
+    <group title="set min=2 and max=5">
+      <x-input title="2-5个字符" placeholder="" :min="2" :max="5"></x-input>
+    </group>
+
+    <group title="确认输入">
+      <x-input title="请输入6位数字" type="text" placeholder="" v-model="password" :min="6" :max="6" @on-change="change"></x-input>
+      <x-input title="请确认6位数字" v-model="password2" type="text" placeholder="" :equal-with="password"></x-input>
+    </group>
+
+    <group title="enter事件">
+      <x-input title="输入完成后回车" type="text" placeholder="" v-model="enterText"
+        @on-enter="onEnter"></x-input>
+    </group>
+
+    <group title="验证码">
+      <x-input title="验证码">
+        <img slot="right-full-height" src="https://ws1.sinaimg.cn/large/663d3650gy1fq684go3glj203m01hmwy.jpg">
+      </x-input>
+      <x-input title="发送验证码" class="weui-vcode">
+        <x-button slot="right" type="primary" mini>发送验证码</x-button>
+      </x-input>
+    </group>
+
+    <group title="check if value is valid when required===true">
+      <x-input title="message" placeholder="I'm placeholder" ref="input01" required></x-input>
+      <cell title="click to get valid value" :value="'$valid value:' + valid1" @click.native="getValid1"></cell>
+    </group>
+
+     <group title="check if value is valid when required===false">
+      <x-input title="message" placeholder="I'm placeholder" :required="false" ref="input02" @click.native="getValid2"></x-input>
+      <cell title="click to get valid value" :value="'$valid value:' + valid2" @click.native="getValid2"></cell>
+    </group>
 
   </div>
 </template>
 
-<i18n>
-hide on clicking mask:
-  zh-CN: 点击遮罩自动关闭
-Toggle:
-  zh-CN: 显示/隐藏
-use .sync:
-  zh-CN: 使用 .sync
-disable background scrolling:
-  zh-CN: 背景不可滚动
-long long content:
-  zh-CN: 很长很长的内容
-custom dialog style:
-  zh-CN: 自定义 dialog 容器样式
-show toast:
-  zh-CN: 显示 toast
-</i18n>
-
 <script>
-import { XDialog, XButton, Group, XSwitch, TransferDomDirective as TransferDom } from 'vux'
+import { XInput, Group, XButton, Cell } from 'vux'
 
 export default {
-  directives: {
-    TransferDom
-  },
   components: {
-    XDialog,
+    XInput,
     XButton,
     Group,
-    XSwitch
-  },
-  methods: {
-    doShowToast () {
-      this.$vux.toast.show({
-        text: 'toast'
-      })
-    }
+    Cell
   },
   data () {
     return {
-      show: false,
-      show2: false,
-      showToast: false,
-      showHideOnBlur: false,
-      showScrollBox: false,
-      showDialogStyle: false
+      input1: '',
+      password: '123465',
+      password2: '',
+      enterText: '',
+      valid1: false,
+      valid2: false,
+      iconType: '',
+      be2333: function (value) {
+        return {
+          valid: value === '2333',
+          msg: 'Must be 2333'
+        }
+      },
+      style: '',
+      disabledValue: 'hello',
+      debounceValue: '',
+      maxValue: '',
+      maskValue: '13545678910',
+      maskValue2: ''
+    }
+  },
+  methods: {
+    getValid1 () {
+      this.valid1 = this.$refs.input01.valid
+    },
+    getValid2 () {
+      this.valid2 = this.$refs.input02.valid
+    },
+    change (val) {
+      console.log('on change', val)
+    },
+    onBlur (val) {
+      console.log('on blur', val)
+    },
+    onFocus (val, $event) {
+      console.log('on focus', val, $event)
+    },
+    onEnter (val) {
+      console.log('click enter!', val)
+    },
+    clearFn() {
+      this.input = ''
     }
   }
 }
 </script>
-
-<style lang="less" scoped>
-@import '~vux/src/styles/close';
-
-.dialog-demo {
-  .weui-dialog{
-    border-radius: 8px;
-    padding-bottom: 8px;
-  }
-  .dialog-title {
-    line-height: 30px;
-    color: #666;
-  }
-  .img-box {
-    height: 350px;
-    overflow: hidden;
-  }
-  .vux-close {
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
+<style scoped>
+.red {
+  color: red;
+}
+.green {
+  color: green;
 }
 </style>

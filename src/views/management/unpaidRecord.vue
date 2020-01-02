@@ -1,6 +1,6 @@
 <!-- 充电记录  -->
 <template>
-  <div id="">
+  <div id="unpaidRecord">
     <ul class="list">
       <li v-for="(item,index) in list" :key="index">
         <h3>{{item.chatname}}</h3>
@@ -139,51 +139,53 @@ export default {
 </script>
 <style lang='less' scoped>
 @width75: 75rem;
-.list {
-  >li {
-    position: relative;
-    height: 172 / @width75;
-    padding: 0 38 / @width75;
-    border-bottom: 1px solid rgb(238,238,238);
-    h3 {
-      height: 70 / @width75;
-      font-size: 32 / @width75;
-      font-weight: 700;
-      line-height: 70 / @width75;
-    }
-    .info {
-      display: flex;
-      flex-wrap: wrap;
-      width: 80%;
-      li {
-        width: 250 / @width75;
-        height: 40 / @width75;
-        line-height: 40 / @width75;
-        font-size: 24 / @width75;
-        span {
-          color: rgb(153,153,153);
+#unpaidRecord {
+  .list {
+    >li {
+      position: relative;
+      height: 172 / @width75;
+      padding: 0 38 / @width75;
+      border-bottom: 1px solid rgb(238,238,238);
+      h3 {
+        height: 70 / @width75;
+        font-size: 32 / @width75;
+        font-weight: 700;
+        line-height: 70 / @width75;
+      }
+      .info {
+        display: flex;
+        flex-wrap: wrap;
+        width: 80%;
+        li {
+          width: 250 / @width75;
+          height: 40 / @width75;
+          line-height: 40 / @width75;
+          font-size: 24 / @width75;
+          span {
+            color: rgb(153,153,153);
+          }
         }
       }
-    }
-    .weui-btn {
-      position: absolute;
-      top: 57 / @width75;
-      right: 39 / @width75;
-      width: 132 / @width75;
-      height: 58 / @width75;
-      color: #fff;
-      line-height: 58 / @width75;
-      background: linear-gradient(left, rgb(134,214,211), rgb(53,186,182));
-      border-radius: 29 / @width75;
+      .weui-btn {
+        position: absolute;
+        top: 57 / @width75;
+        right: 39 / @width75;
+        width: 132 / @width75;
+        height: 58 / @width75;
+        color: #fff;
+        line-height: 58 / @width75;
+        background: linear-gradient(left, rgb(134,214,211), rgb(53,186,182));
+        border-radius: 29 / @width75;
+      }
     }
   }
-}
-#pressAll {
-  position: fixed;
-  bottom: 0;
-  height: 88 / @width75;
-  background: #35bab7;
-  color: #fff;
+  #pressAll {
+    position: fixed;
+    bottom: 0;
+    height: 88 / @width75;
+    background: #35bab7;
+    color: #fff;
+  }
 }
 </style>
 

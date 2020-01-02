@@ -2,10 +2,10 @@
 <template>
     <div id="editRoom">
         <group>
-            <x-input title="房间名称" v-model="form.roomname" placeholder="请输入房间名称" show-clear @on-click-clear-icon="clear('roomname')"></x-input>
-            <x-input title="用户名" v-model="form.householdName" placeholder="请输入用户名" @on-click-clear-icon="clear('accountid')"></x-input>
+            <x-input title="房间名称" v-model="form.roomname" placeholder="请输入房间名称" :show-clear="false"></x-input>
+            <x-input title="用户名" v-model="form.householdName" placeholder="请输入用户名" :show-clear="false"></x-input>
             <x-address title="省市区" v-model="addressArr" :list="addressData" @on-hide="hide" placeholder="请选择地址"></x-address>
-            <x-input title="详细地址" v-model="form.disc" placeholder="请输入详细地址" @on-click-clear-icon="clear('disc')"></x-input>
+            <x-input title="详细地址" v-model="form.disc" placeholder="请输入详细地址" :show-clear="false"></x-input>
         </group>
         <confirm v-model="removeshow" title="提示" confirm-text="确定" cancel-text="取消" @on-confirm="onConfirm">
           <p>继续操作？</p>
@@ -104,9 +104,6 @@ export default {
             console.log(res, '新增/修改房间')
             this.$router.push('/manageRoom')
         })
-      },
-      clear(val) {
-          this.form[val] = ''
       },
       hide(val) {
           axios('../static/json/map.json').then(res => {

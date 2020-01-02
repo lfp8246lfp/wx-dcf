@@ -1,5 +1,5 @@
 <template>
-  <div class="payment">
+  <div id="payment">
     <div class="select">
       <group>
         <cell :title="$t('scan.select')"></cell>
@@ -22,6 +22,21 @@
             </checker-item>
           </checker>
         </div>
+        <div class="customRecharge">
+          <input
+            type="text"
+            autocomplete="off"
+            placeholder="请输入充值金额"
+            v-model="customRecharge"
+            @input="inputAmount"
+          >
+        </div>
+      <div class="balance">
+        <div class="balance-icon">
+          <img src="../../assets/icon/Section/sum.png" alt="">
+        </div>
+        <span>我的余额 {{balance}}（元）</span>
+      </div>
       </group>
     </div>
     <div class="payWay">
@@ -70,15 +85,19 @@ export default {
   mounted() {},
   computed: {
     ...mapState({
-      token: state => state.token
+      token: state => state.token,
+      balance: state => state.balance
     }),
     ...mapGetters(["userInfos", "orderNum"])
   },
   data: function() {
     return {
+        // 支付方式的值和选项
       checklist: [this.$t("recharge.wechatpay")],
       commonList: [this.$t("recharge.wechatpay")],
+        // 选择面额的值
       selectMoney: 10,
+
       chargingInfo: {
         chatid: "",
         rechargevalue: 10
@@ -90,7 +109,9 @@ export default {
         orderNum: ""
       },
       failNum: false,
-      resultMsg: ""
+      resultMsg: "",
+        // 输入金额
+      customRecharge: ''
     };
   },
   methods: {
@@ -100,6 +121,7 @@ export default {
     formatTime2(val) {
       return format(val, "YYYY-MM-DD HH:mm:ss");
     },
+      //创建随机的orderNum
     createNum() {
       let Num = "";
       for (var i = 0; i < 6; i++) {
@@ -107,6 +129,7 @@ export default {
       }
       return Num;
     },
+      //充值按钮
     charging() {
       if (userItem == null) {
         wechat.wxAuthJump();
@@ -138,6 +161,7 @@ export default {
           });
       }
     },
+    // 支付
     callWXPay(params) {
       var _this = this;
       return new Promise((resolve, reject) => {
@@ -156,7 +180,6 @@ export default {
           paySign: params.paySign, /// 支付签名
           success: function(res) {
             // 支付成功后的回调函数
-
             if (res.errMsg == "chooseWXPay:ok") {
               //   _this.beginCharging();
               //   _this.UpdateUserInfo();
@@ -173,7 +196,7 @@ export default {
             _this.failNum = false;
           },
           error: function(res) {
-            _this.commit("UPDATE_TOAST", "充值失敗");
+            _this.commit("UPDATE_TOAST", "充值失败");
             _this.failNum = true;
           }
         });
@@ -181,9 +204,17 @@ export default {
     },
     // 选择金额
     selectAmount(itemValue) {
-      console.log(itemValue);
-      this.payInfo.price = itemValue;
-      this.chargingInfo.rechargevalue = itemValue;
+      this.customRecharge = ''
+      console.log(itemValue)
+      this.payInfo.price = itemValue
+      this.chargingInfo.rechargevalue = itemValue
+    },
+    // 输入金额
+    inputAmount() {
+      this.selectMoney = ''
+      console.log(this.customRecharge)
+      this.payInfo.price = this.customRecharge
+      this.chargingInfo.rechargevalue = this.customRecharge
     },
     // async GetUserInfomation() {
     //   this.$store
@@ -195,6 +226,7 @@ export default {
     //     });
     // },
     async AddAppWxChatRecharge() {
+      // 微信充值改变个人账户金钱更新
       const result = await this.$store.dispatch("AC_AddAppWxChatRecharge", {
         chatid: userItem.openid,
         rechargevalue: this.chargingInfo.rechargevalue
@@ -239,7 +271,7 @@ export default {
 </script>
 <style lang="less" scoped>
 @width75: 75rem;
-.payment {
+#payment {
   position: relative;
   height: 100%;
   .flexbox {
@@ -266,6 +298,40 @@ export default {
       }
     }
   }
+  .customRecharge {
+    background: #ffffff;
+    padding: 20 / @width75 30 / @width75;
+    input {
+      padding-left: 19 / @width75;
+      border-radius: 16 / @width75;
+      border: 2 / @width75 solid rgb(232, 232, 232);
+      height: 68 / @width75;
+      line-height: 68 / @width75;
+      font-size: 28 / @width75;
+    }
+  }
+  .balance {
+    display: flex;
+    height: 100 / @width75;
+    padding: 20 / @width75 30 / @width75;
+    background-color: #fff;
+    font-size: 30 / @width75;
+    .balance-icon {
+      width: 60 / @width75;
+      height: 60 / @width75;
+      img {
+        // width: 40 / @width75;
+        // height: 40 / @width75;
+        margin-top: -10 / @width75;
+      }
+    }
+    span {
+      height: 40 / @width75;
+      line-height: 40 / @width75;
+      padding-left: 10 / @width75;
+    }
+  }
+
   .demo5-item {
     background: #f6f6f6;
     color: #000000;

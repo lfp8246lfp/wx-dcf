@@ -110,7 +110,6 @@ export default {
       showDialog: false,
       showBill: true,
       noData: '',
-      thisMonthRent: '该月租金'
     };
   },
 
