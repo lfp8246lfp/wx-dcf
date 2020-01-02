@@ -11,7 +11,7 @@
             class="checkbox"
           >
             <checker-item
-              v-for="i in [10,20,50,100,200,300,500,800,1000]"
+              v-for="i in [0.1,10,20,50,100,200,300,500,800,1000]"
               :key="i"
               :value="i"
               class="check-item"
@@ -162,6 +162,7 @@ export default {
       }
     },
     // 支付
+    // charging里调用
     callWXPay(params) {
       var _this = this;
       return new Promise((resolve, reject) => {
@@ -239,6 +240,8 @@ export default {
         rechargetype: 1
       });
     },
+
+    // callWXPay里调用
     async SendWaringMsg() {
       const result = await this.$store.dispatch("AC_SendWaringMsg", {
         title: "充值成功通知",
