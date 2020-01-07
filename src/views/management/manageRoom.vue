@@ -26,15 +26,16 @@
           <div class="content">
               <ul>
                   <li>
-                      <span>用户名：</span>
+                      <i>用户名：</i>
                       {{item.accountid}}
                   </li>
                   <li>
-                      <span>所属区域：</span>
-                      {{item.province + ' ' + item.town + ' ' + item.region}}
+                      <i>所属区域：</i>
+                      <span v-if="item.province">{{item.province + ' ' + item.town + ' ' + item.region}}</span>
+                      <span v-else></span>
                   </li>
                   <li>
-                      <span>详细地址：</span>
+                      <i>详细地址：</i>
                       {{item.disc}}
                   </li>
               </ul>
@@ -230,8 +231,9 @@ export default {
             li {
                 height: 46 / @width75;
                 line-height: 46 / @width75;
-                span {
+                i {
                     color: rgb(153,153,153);
+                    font-style: normal;
                 }
             }
         }

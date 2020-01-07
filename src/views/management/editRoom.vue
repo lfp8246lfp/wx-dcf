@@ -12,6 +12,7 @@
         </confirm>
         <toast v-model="showToast" type="text" width="15em" :time="800" :text="toastText"></toast>
         <x-button @click.native="editRoom">确定</x-button>
+        <!-- <div>{{hh}}</div> -->
     </div>
 </template>
 <script>
@@ -36,7 +37,8 @@ export default {
         id: '',
         toastText: '',
         showToast: false,
-        removeshow: false
+        removeshow: false,
+        hh:''
     }
   },
   components: {
@@ -48,12 +50,16 @@ export default {
     XAddress,
     Toast
   },
+  created() {
+  },
   mounted() {
     let room = this.$route.params
+    console.log(room, 'room')
     if (!room.id) {
         // 新增
         this.optype = 1
         this.id = null
+        console.log('新增')
         return
     }
     // 编辑
@@ -63,14 +69,14 @@ export default {
     this.form.province = room.province
     this.form.town = room.town
     this.form.region = room.region
-    axios('../static/json/map.json').then(res => {
-        let p = res.data.find(item => item.value === room.province)
-        let t = p.children.find(item => item.value === room.town)
-        let r = t.children.find(item => item.value === room.region)
-        this.addressArr = [p.id, t.id, r.id]
-    })
+    let p = this.addressData.find(item => item.name === room.province).value
+    let t = this.addressData.find(item => item.name === room.town).value
+    let r = this.addressData.find(item => item.name === room.region).value
+    this.addressArr = [p, t, r]
     this.optype = 2
     this.id = room.id
+    // this.hh = JSON.stringify(room) + ' room ' + JSON.stringify(this.addressArr) + ' 编辑'
+    console.log('编辑')
   },
   methods: {
       editRoom() {
@@ -86,7 +92,7 @@ export default {
             this.toastText = '请输入详细地址'
             this.showToast = true
             return
-          } else if (!this.form.province.trim()) {
+          } else if (!this.addressArr.length) {
             this.toastText = '请选择省市区'
             this.showToast = true
             return
@@ -100,21 +106,28 @@ export default {
             id: this.id,
             ...this.form
         }
+        // this.hh = JSON.stringify(this.form) + ' 新增'
         api.optUnit(obj).then(res => {
-            console.log(res, '新增/修改房间')
+          console.log(res, '新增/修改房间')
+          if (res.data.returnCode === 1) {
+            this.toastText = '操作成功'
+            this.showToast = true
             this.$router.push('/manageRoom')
+          } else {
+            this.toastText = '操作失败'
+            this.showToast = true
+          }
         })
       },
-      hide(val) {
-          axios('../static/json/map.json').then(res => {
-              if (!this.addressArr[0]) return // 当没有选择时，不用进行之后的操作
-              let p = res.data.find(item => item.id === this.addressArr[0])
-              let t = p.children.find(item => item.id === this.addressArr[1])
-              let r = t.children.find(item => item.id === this.addressArr[2])
-              this.form.province = p.value
-              this.form.town = t.value
-              this.form.region = r.value
-          })
+      hide() {
+          if (!this.addressArr[0]) return // 当没有选择时，不用进行之后的操作
+          let p = this.addressData.find(item => item.value === this.addressArr[0]).name
+          let t = this.addressData.find(item => item.value === this.addressArr[1]).name
+          let r = this.addressData.find(item => item.value === this.addressArr[2]).name
+          this.form.province = p
+          this.form.town = t
+          this.form.region = r
+          // this.hh = JSON.stringify(this.form)
       }
   },
 };

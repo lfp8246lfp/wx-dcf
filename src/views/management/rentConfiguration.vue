@@ -39,7 +39,7 @@ export default {
         endtime: '',
         // datepayment: '',
         chatname: '',
-        phone: ''
+        phone: '',
       },
       // rentTime: [['三个月', '六个月', '十二个月', '二十四个月']],
       minYear: new Date().getFullYear(),
@@ -70,7 +70,7 @@ export default {
           msg: '请输入数字'
         }
       },
-      tenantChatid: ''
+      tenantChatid: '',
     }
   },
   components: {
@@ -86,9 +86,8 @@ export default {
     Toast
   },
   mounted() {
-    console.log(this.$route.params)
-    let room = this.$route.params
-    if (room.commaddress) {
+    let roomid = this.$store.state.roomid
+    if (roomid) {
       this.searchTenant()
     }
   },
@@ -97,9 +96,15 @@ export default {
       let roomid = this.$store.state.roomid
       api.selectTenantInfo({roomid}).then(res => {
         console.log(res, '获取租户')
-        this.form.chatname = res.data.items[0].chatname
-        this.form.phone = res.data.items[0].phone
-        this.tenantChatid = res.data.items[0].chatid
+        if (res.data.returnCode === 1) {
+            this.form.chatname = res.data.items[0].chatname
+            this.form.phone = res.data.items[0].phone
+            this.tenantChatid = res.data.items[0].chatid
+            if (res.data.items.length < 1) {
+              this.toastText = '无法获取租户'
+              this.showToast = true
+            }
+        }
       })
     },
     add() {
@@ -130,7 +135,8 @@ export default {
       }
       let time1 = this.form.starttime
       let time2 = this.form.endtime
-      let rentTime = (Number(time2.substr(0,4)) - Number(time1.substr(0,4))) * 12 + Number(time2.substr(5,1)) - Number(time1.substr(5,1))
+      console.log(time1,time2)
+      let rentTime = (Number(time2.substr(0,4)) - Number(time1.substr(0,4))) * 12 + Number(time2.substr(5,2)) - Number(time1.substr(5,2))
       let obj = {
         accountid,
         optType: 1,
@@ -147,13 +153,13 @@ export default {
       api.optRoomConfiguration(obj).then(res => {
          console.log(res, '新增')
          if (res.data.returnCode === 1) {
-           this.toastText = '新增成功'
+           this.toastText = '配置成功'
            this.showToast = true
            setTimeout(() => {
              this.$router.push('/manageRoom')
-           }, 1000);
+           }, 1000)
          } else {
-           this.toastText = res.data.returnMsg
+           this.toastText = '配置失败'
            this.showToast = true
          }
       })

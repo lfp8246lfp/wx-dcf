@@ -16,6 +16,9 @@
       <radio :options="radioList" v-model="radioData"></radio>
     </group>
     <x-button @click.native="eleedit" class="eleedit-btn" :disabled="disabled">{{$t("device.determine")}}</x-button>
+    <confirm v-model="addConformShow" title="提示" confirm-text="确定" cancel-text="取消" @on-confirm="addConfirm">
+      <p class="text-center">确定添加电表吗？</p>
+    </confirm>
 
     <div v-transfer-dom>
       <confirm v-model="meternameshow" :title="$t('device.tips')" :confirm-text="$t('device.determine')" :cancel-text="$t('device.cancel')" @on-confirm="onConfirm">
@@ -77,7 +80,8 @@ export default {
           msg: '请输入8位数字的通讯地址'
         }
       },
-      disabled: false
+      disabled: false,
+      addConformShow: false
     };
   },
   directives: {
@@ -131,6 +135,7 @@ export default {
           });
         });
       });
+      console.log(this.radioList, 'radioList')
     },
     // 确定事件
     eleedit: function(event) {
@@ -174,7 +179,19 @@ export default {
         this.toastText = '请输入表号'
         this.showToast = true
         return
+      } else if (!this.radioData) {
+        this.toastText = '请选择电价'
+        this.showToast = true
+        return
       }
+      this.addConformShow = true
+    },
+    toPickMeter() {
+      this.$router.push('/pickMeter')
+    },
+    // 确定事件（只是个形式）
+    onConfirm() {},
+    addConfirm() {
       let obj = {
 	      id: this.$store.state.roomid,
 	      accountid,
@@ -186,19 +203,16 @@ export default {
       }
       api.addWifiDevInfo(obj).then(res => {
         console.log(res, '新增wifi表')
-        this.toastText = "添加成功"
-        this.showToast = true
-        this.$router.push({
-          name: 'manageDevice',
-          params: {id}
-        })
+        if (res.data.returncode === 1) {
+          this.toastText = "添加成功"
+          this.showToast = true
+          this.$router.push('/manageDevice')
+        } else {
+          this.toastText = res.data.returnMsg
+          this.showToast = true
+        }
       })
     },
-    toPickMeter() {
-      this.$router.push('/pickMeter')
-    },
-    // 确定事件（只是个形式）
-    onConfirm() {},
     commaddressChange() {
       if(this.$refs.commaddress.valid){
         this.disabled = false
